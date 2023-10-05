@@ -1,6 +1,6 @@
-FROM golang:1-alpine as build
+FROM golang:1.20-alpine as build
 
-ARG CLOUDFLARED_VERSION=2023
+ARG CLOUDFLARED_VERSION
 
 RUN apk add --no-cache ca-certificates git build-base && \
     git clone --recursive https://github.com/cloudflare/cloudflared --branch ${CLOUDFLARED_VERSION} /src && \
