@@ -47,7 +47,6 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.event.repository.full_name }}
-          token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.TARGET_IMAGE_TAG }}
 
       - name: Run Hadolint
