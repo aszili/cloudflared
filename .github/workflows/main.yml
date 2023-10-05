@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       force:
-        description: force build image even if already exists
+        description: Force build image even if already exists
         required: false
         default: false
         type: boolean
@@ -23,6 +23,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: echo "$GITHUB_CONTEXT"
+
       - name: Checkout
         uses: actions/checkout@v4
         if: ${{ !github.event.act }}
