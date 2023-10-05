@@ -7,6 +7,12 @@ on:
   schedule:
     - cron: "30 10 * * 4"
   workflow_dispatch:
+    inputs:
+      force:
+        description: force build image even if already exists
+        required: false
+        default: false
+        type: boolean
 
 env:
   DOCKER_USERNAME: ${{ github.repository_owner }}
@@ -47,7 +53,7 @@ jobs:
 
       - name: Run Hadolint
         uses: hadolint/hadolint-action@v3.1.0
-        if: ${{ steps.image-exists.outputs.tag == 'not found' }}
+        if: ${{ inputs.force || steps.image-exists.outputs.tag == 'not found' }}
         with:
           dockerfile: ./Dockerfile
           format: sarif
@@ -55,23 +61,23 @@ jobs:
           no-fail: true
 
       - name: Print Hadolint lint Results
-        if: ${{ steps.image-exists.outputs.tag == 'not found' }}
+        if: ${{ inputs.force || steps.image-exists.outputs.tag == 'not found' }}
         run: echo 'HADOLINT LINT RESULTS => ${{ env.HADOLINT_RESULTS }}'
 
       - name: Upload Analysis Results to GitHub
         uses: github/codeql-action/upload-sarif@v2
-        if: ${{ steps.image-exists.outputs.tag == 'not found' }}
+        if: ${{ inputs.force || steps.image-exists.outputs.tag == 'not found' }}
         with:
           sarif_file: hadolint-results.sarif
           wait-for-processing: true
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        if: ${{ steps.image-exists.outputs.tag == 'not found' }}
+        if: ${{ inputs.force || steps.image-exists.outputs.tag == 'not found' }}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
-        if: ${{ steps.image-exists.outputs.tag == 'not found' }}
+        if: ${{ inputs.force || steps.image-exists.outputs.tag == 'not found' }}
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -79,7 +85,7 @@ jobs:
 
       - name: Build Container and Push
         uses: docker/build-push-action@v5
-        if: ${{ steps.image-exists.outputs.tag == 'not found' }}
+        if: ${{ inputs.force || steps.image-exists.outputs.tag == 'not found' }}
         with:
           context: .
           platforms: ${{ env.DOCKER_TARGET_PLATFORM }}
