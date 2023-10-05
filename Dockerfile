@@ -1,9 +1,9 @@
-ARG CLOUDFLARED_VERSION=2023
-
 FROM golang:1-alpine as build
 
+ARG CLOUDFLARED_VERSION=2023
+
 RUN apk add --no-cache ca-certificates git build-base && \
-    git clone --recursive https://github.com/cloudflare/cloudflared --branch "${CLOUDFLARED_VERSION}" /src && \
+    git clone --recursive https://github.com/cloudflare/cloudflared --branch ${CLOUDFLARED_VERSION} /src && \
     cd /src && \
     GOARCH=amd64 GO111MODULE=on CGO_ENABLED=0 make -j "$(nproc)" cloudflared
 
