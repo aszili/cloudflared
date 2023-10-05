@@ -1,11 +1,10 @@
 FROM golang:1.20-alpine as build
 
+WORKDIR /src
+RUN apk add --no-cache ca-certificates git build-base
 ARG CLOUDFLARED_VERSION
-
-RUN apk add --no-cache ca-certificates git build-base && \
-    git clone --recursive https://github.com/cloudflare/cloudflared --branch ${CLOUDFLARED_VERSION} /src && \
-    cd /src && \
-    GOARCH=amd64 GO111MODULE=on CGO_ENABLED=0 make -j "$(nproc)" cloudflared
+RUN git clone https://github.com/cloudflare/cloudflared --depth=1 --branch ${CLOUDFLARED_VERSION} .
+RUN GOARCH=amd64 GO111MODULE=on CGO_ENABLED=0 make -j "$(nproc)" cloudflared
 
 FROM alpine:3
 RUN apk add --no-cache ca-certificates tzdata curl
