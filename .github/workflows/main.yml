@@ -18,7 +18,7 @@ jobs:
   initialize:
     runs-on: ubuntu-latest
     outputs:
-      TARGET_IMAGE_TAG: ${{ steps.cloudflared-version.outputs.release }}
+      TARGET_IMAGE_TAG: ${{ steps.results.outputs.target_tag }}
     steps:
       - name: Get latest cloudflared version
         id: cloudflared-version
@@ -28,7 +28,9 @@ jobs:
           repo: cloudflared
           token: ${{ secrets.GITHUB_TOKEN }}
           excludes: prerelease, draft
-
+      
+      - id: results
+        run: echo "target_tag=${{ steps.cloudflared-version.outputs.release }}" >> $GITHUB_OUTPUT
   build:
     needs: initialize
     uses: ./.github/workflows/build-docker-image.yml
