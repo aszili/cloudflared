@@ -27,7 +27,8 @@ jobs:
         if: ${{ !github.event.act }}
 
       - name: Echo inputs
-        run: echo "input tag: ${{ inputs.target_tag }}"
+        run: |
+          echo "input tag: ${{ inputs.target_tag }}"
 
       - name: Check if image exists
         id: image-exists
