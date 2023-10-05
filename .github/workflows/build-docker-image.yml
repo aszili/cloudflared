@@ -26,6 +26,9 @@ jobs:
         uses: actions/checkout@v4
         if: ${{ !github.event.act }}
 
+      - name: Echo inputs
+        run: echo "input tag: ${{ inputs.target_tag }}"
+
       - name: Check if image exists
         id: image-exists
         uses: tyriis/docker-image-tag-exists@v2.0.1
