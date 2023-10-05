@@ -9,25 +9,18 @@ on:
   workflow_dispatch:
     inputs:
       force:
-        description: Force build image even if already exists
+        description: Build the image even if it already exists
         required: false
         default: false
         type: boolean
 
 env:
-  DOCKER_USERNAME: ${{ github.repository_owner }}
-  DOCKER_CONTAINER_NAME: ${{ github.event.repository.name }}
-  DOCKER_TARGET_PLATFORM: linux/amd64
+  TARGET_PLATFORM: linux/amd64
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: echo "$GITHUB_CONTEXT"
-
       - name: Checkout
         uses: actions/checkout@v4
         if: ${{ !github.event.act }}
@@ -44,17 +37,18 @@ jobs:
       - name: Prepare
         id: prepare
         run: |
-          echo "docker_platform=${DOCKER_TARGET_PLATFORM}" >> $GITHUB_ENV
-          echo "builddate=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
-          echo "IMAGE_TAG=${{ steps.cloudflared-version.outputs.release }}" >> $GITHUB_ENV
+          echo "docker_platform=${TARGET_PLATFORM}" >> $GITHUB_ENV
+          echo "BUILD_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+          echo "TARGET_IMAGE_TAG=${{ steps.cloudflared-version.outputs.release }}" >> $GITHUB_ENV
 
       - name: Check if Image Exists
         id: image-exists
         uses: tyriis/docker-image-tag-exists@v2.0.1
         with:
           registry: ghcr.io
-          repository: ${{ github.event.repository.owner.login }}/${{ github.event.repository.name }}
-          tag: ${{ env.IMAGE_TAG }}
+          repository: ${{ github.event.repository.full_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ env.TARGET_IMAGE_TAG }}
 
       - name: Run Hadolint
         uses: hadolint/hadolint-action@v3.1.0
@@ -93,9 +87,9 @@ jobs:
         if: ${{ inputs.force || steps.image-exists.outputs.tag == 'not found' }}
         with:
           context: .
-          platforms: ${{ env.DOCKER_TARGET_PLATFORM }}
+          platforms: ${{ env.TARGET_PLATFORM }}
           push: true
-          build-args: CLOUDFLARED_VERSION=${{ env.IMAGE_TAG }}
+          build-args: CLOUDFLARED_VERSION=${{ env.TARGET_IMAGE_TAG }}
           tags: |
-            ghcr.io/${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_CONTAINER_NAME }}:${{ env.IMAGE_TAG }}
-            ghcr.io/${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_CONTAINER_NAME }}:latest
+            ghcr.io/${{ github.event.repository.full_name }}:${{ env.TARGET_IMAGE_TAG }}
+            ghcr.io/${{ github.event.repository.full_name }}:latest
