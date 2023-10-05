@@ -12,3 +12,5 @@ updates:
       interval: daily
     assignees:
       - aszili
+    ignore:
+      - dependency-name: golang
