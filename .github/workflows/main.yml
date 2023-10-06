@@ -31,7 +31,7 @@ jobs:
 
   build:
     needs: initialize
-    uses: ./.github/workflows/build-docker-image.yml
+    uses: aszili/github-actions/.github/workflows/build-docker-image.yml@main    
     with:
       target_tag: ${{ needs.initialize.outputs.TARGET_IMAGE_TAG }}
       build_args: CLOUDFLARED_VERSION=${{ needs.initialize.outputs.TARGET_IMAGE_TAG }}
