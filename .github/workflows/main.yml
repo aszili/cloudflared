@@ -35,4 +35,4 @@ jobs:
     with:
       target_tag: ${{ needs.initialize.outputs.TARGET_IMAGE_TAG }}
       build_args: CLOUDFLARED_VERSION=${{ needs.initialize.outputs.TARGET_IMAGE_TAG }}
-      force: ${{ inputs.force }}
+      force: ${{ false || inputs.force}}
