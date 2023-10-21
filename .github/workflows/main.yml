@@ -32,9 +32,7 @@ jobs:
   build:
     needs: initialize
     uses: aszili/github-actions/.github/workflows/build-docker-image.yml@main
-    env:
-      FORCE_BUILD: ${{ !!(inputs.force) }}    
     with:
       target_tag: ${{ needs.initialize.outputs.TARGET_IMAGE_TAG }}
       build_args: CLOUDFLARED_VERSION=${{ needs.initialize.outputs.TARGET_IMAGE_TAG }}
-      force: ${{ env.FORCE_BUILD}}
+      force: ${{ contains(inputs.force, 'true') }}
