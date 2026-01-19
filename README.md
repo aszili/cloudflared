@@ -1,2 +1,2 @@
 # cloudflared
-A cloudflared image built on Alpine Linux and with shell support while being still smaller than the official image
+A cloudflared image built from scratch at 23MB it is much smaller than the official image, has nothing else in the image.
