@@ -10,6 +10,6 @@ RUN go build -trimpath -ldflags="-s -w" -o cloudflared ./cmd/cloudflared
 FROM scratch
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /src/cloudflared /cloudflared
-ENTRYPOINT ["/cloudflared", "--no-autoupdate", "--metrics", "localhost:9173"]
+ENTRYPOINT ["/cloudflared", "--no-autoupdate", "--metrics", "0.0.0.0:9173"]
 CMD ["tunnel", "run"]
 
