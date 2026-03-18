@@ -1,6 +1,6 @@
 {
   "private": true,
   "dependencies": {
-    "cloudflared": "github:cloudflare/cloudflared#2026.2.0"
+    "cloudflared": "github:cloudflare/cloudflared#2026.3.0"
   }
 }
