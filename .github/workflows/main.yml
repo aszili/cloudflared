@@ -2,10 +2,13 @@ name: Docker Build & Push
 
 on:
   push:
-    tags:
-      - "*"
-  schedule:
-    - cron: "30 10 * * *"
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
   workflow_dispatch:
     inputs:
       force:
@@ -16,23 +19,15 @@ on:
 
 jobs:
   initialize:
-    runs-on: ubuntu-latest
-    outputs:
-      TARGET_IMAGE_TAG: ${{ steps.cloudflared-version.outputs.release }}
-    steps:
-      - name: Get latest cloudflared version
-        id: cloudflared-version
-        uses: pozetroninc/github-action-get-latest-release@v0.8.0
-        with:
-          owner: cloudflare
-          repo: cloudflared
-          token: ${{ secrets.GITHUB_TOKEN }}
-          excludes: prerelease, draft
+    uses: aszili/github-actions/.github/workflows/prepare-package-version.yml@main
+    with:
+      package_name: cloudflared
+      output_env_var: CLOUDFLARED_VERSION
 
   build:
     needs: initialize
     uses: aszili/github-actions/.github/workflows/build-docker-image.yml@main
     with:
-      target_tag: ${{ needs.initialize.outputs.TARGET_IMAGE_TAG }}
-      build_args: CLOUDFLARED_VERSION=${{ needs.initialize.outputs.TARGET_IMAGE_TAG }}
+      target_tag: ${{ needs.initialize.outputs.version }}
+      build_args: CLOUDFLARED_VERSION=${{ needs.initialize.outputs.version }}
       force: ${{ contains(inputs.force, 'true') }}

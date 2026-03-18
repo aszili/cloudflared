@@ -1,4 +1,5 @@
 version: 2
+
 updates:
   - package-ecosystem: github-actions
     directory: /
@@ -6,6 +7,7 @@ updates:
       interval: daily
     assignees:
       - aszili
+
   - package-ecosystem: docker
     directory: /
     schedule:
@@ -14,3 +16,10 @@ updates:
       - aszili
     ignore:
       - dependency-name: golang
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: daily
+    assignees:
+      - aszili
